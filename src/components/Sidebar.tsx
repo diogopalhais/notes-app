@@ -5,6 +5,52 @@ import type { Note } from "../hooks/useNotes";
 
 type View = "all" | "today" | "week" | "folder" | "tag";
 
+function NavItem({
+  icon,
+  label,
+  count,
+  isActive,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  count?: number;
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left"
+      style={{
+        backgroundColor: isActive ? "var(--color-bg-active)" : "transparent",
+        color: isActive ? "var(--color-text-primary)" : "var(--color-text-secondary)",
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive) {
+          e.currentTarget.style.backgroundColor = "var(--color-bg-hover)";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive) {
+          e.currentTarget.style.backgroundColor = "transparent";
+        }
+      }}
+    >
+      {icon}
+      <span className="flex-1 text-sm">{label}</span>
+      {count !== undefined && (
+        <span 
+          className="text-xs"
+          style={{ color: "var(--color-text-muted)" }}
+        >
+          {count}
+        </span>
+      )}
+    </button>
+  );
+}
+
 interface SidebarProps {
   view: View;
   selectedFolderId: string | null;
@@ -46,50 +92,6 @@ export function Sidebar({
   onLogout,
   onCopyUserId,
 }: SidebarProps) {
-  const NavItem = ({
-    icon,
-    label,
-    count,
-    isActive,
-    onClick,
-  }: {
-    icon: React.ReactNode;
-    label: string;
-    count?: number;
-    isActive: boolean;
-    onClick: () => void;
-  }) => (
-    <button
-      onClick={onClick}
-      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left"
-      style={{
-        backgroundColor: isActive ? "var(--color-bg-active)" : "transparent",
-        color: isActive ? "var(--color-text-primary)" : "var(--color-text-secondary)",
-      }}
-      onMouseEnter={(e) => {
-        if (!isActive) {
-          e.currentTarget.style.backgroundColor = "var(--color-bg-hover)";
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isActive) {
-          e.currentTarget.style.backgroundColor = "transparent";
-        }
-      }}
-    >
-      {icon}
-      <span className="flex-1 text-sm">{label}</span>
-      {count !== undefined && (
-        <span 
-          className="text-xs"
-          style={{ color: "var(--color-text-muted)" }}
-        >
-          {count}
-        </span>
-      )}
-    </button>
-  );
-
   return (
     <div 
       className="w-64 flex flex-col h-full"

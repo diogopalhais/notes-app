@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Editor } from "./Editor";
 import { Preview } from "./Preview";
 import type { Note } from "../hooks/useNotes";
@@ -12,21 +12,22 @@ interface NoteEditorProps {
 }
 
 export function NoteEditor({ note, folders, onUpdateNote, onMoveToFolder }: NoteEditorProps) {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState(note?.title ?? "");
+  const [content, setContent] = useState(note?.content ?? "");
   const [showPreview, setShowPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showFolderMenu, setShowFolderMenu] = useState(false);
   const folderMenuRef = useRef<HTMLDivElement>(null);
+  const prevNoteIdRef = useRef<string | undefined>(note?.id);
 
   // Get the current folder object from folderId
-  const currentFolder = useMemo(() => {
-    if (!note?.folderId) return null;
-    return folders.find(f => f.id === note.folderId) || null;
-  }, [note?.folderId, folders]);
+  const currentFolder = note?.folderId 
+    ? folders.find(f => f.id === note.folderId) ?? null
+    : null;
 
-  // Sync local state with note prop
-  useEffect(() => {
+  // Sync local state with note prop when note ID changes
+  if (note?.id !== prevNoteIdRef.current) {
+    prevNoteIdRef.current = note?.id;
     if (note) {
       setTitle(note.title);
       setContent(note.content);
@@ -34,7 +35,7 @@ export function NoteEditor({ note, folders, onUpdateNote, onMoveToFolder }: Note
       setTitle("");
       setContent("");
     }
-  }, [note?.id]); // Only update when note ID changes
+  }
 
   // Close folder menu when clicking outside
   useEffect(() => {

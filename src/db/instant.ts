@@ -1,4 +1,4 @@
-import { init, id, tx } from "@instantdb/react";
+import { init, id, tx, i } from "@instantdb/react";
 
 // InstantDB App ID - create one at https://instantdb.com
 const APP_ID = import.meta.env.VITE_INSTANT_APP_ID;
@@ -14,32 +14,31 @@ if (!APP_ID || APP_ID === "your-app-id-here") {
   );
 }
 
-// Define the schema type for TypeScript
-type Schema = {
-  notes: {
-    id: string;
-    ownerId: string;
-    title: string;
-    content: string;
-    createdAt: number;
-    updatedAt: number;
-  };
-  folders: {
-    id: string;
-    ownerId: string;
-    name: string;
-    color?: string;
-  };
-  tags: {
-    id: string;
-    ownerId: string;
-    name: string;
-    color?: string;
-  };
-};
+// Define the schema using InstantDB's schema builder
+const schema = i.schema({
+  entities: {
+    notes: i.entity({
+      ownerId: i.string(),
+      title: i.string(),
+      content: i.string(),
+      createdAt: i.number(),
+      updatedAt: i.number(),
+    }),
+    folders: i.entity({
+      ownerId: i.string(),
+      name: i.string(),
+      color: i.string().optional(),
+    }),
+    tags: i.entity({
+      ownerId: i.string(),
+      name: i.string(),
+      color: i.string().optional(),
+    }),
+  },
+});
 
 // Initialize the database (will fail silently without valid APP_ID)
-export const db = init<Schema>({ appId: APP_ID || "placeholder" });
+export const db = init({ appId: APP_ID || "placeholder", schema });
 
 // Export utilities
 export { id, tx };

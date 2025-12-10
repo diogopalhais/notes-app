@@ -50,7 +50,7 @@ Open http://localhost:5173
 
 ## Tech Stack
 
-- **React 18** + **Vite**
+- **React 19** + **Vite 7**
 - **InstantDB** - Real-time database with offline support
 - **CodeMirror 6** - Markdown editor
 - **react-markdown** - Markdown preview
@@ -88,6 +88,41 @@ src/
 3. On another device, enter the same key to sync notes
 
 **Important:** Keep your secret key safe - it's the only way to access your notes!
+
+## Deployment
+
+### Vercel (Recommended)
+
+1. Push your code to GitHub
+2. Go to [vercel.com](https://vercel.com) and import your repo
+3. Add environment variable: `VITE_INSTANT_APP_ID=your-app-id`
+4. Deploy
+
+### Netlify
+
+1. Push your code to GitHub
+2. Go to [netlify.com](https://netlify.com) and import your repo
+3. Build command: `npm run build`
+4. Publish directory: `dist`
+5. Add environment variable: `VITE_INSTANT_APP_ID=your-app-id`
+6. Deploy
+
+### Cloudflare Pages
+
+1. Push your code to GitHub
+2. Go to Cloudflare Dashboard → Pages
+3. Connect your repo
+4. Build command: `npm run build`
+5. Build output directory: `dist`
+6. Add environment variable: `VITE_INSTANT_APP_ID=your-app-id`
+7. Deploy
+
+### Manual (Any Static Host)
+
+```bash
+npm run build
+# Upload the `dist` folder to your host
+```
 
 ## Future Plans
 

@@ -4,4 +4,5 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  base: '/notes-app/', // GitHub Pages repo name
 })

@@ -1,24 +1,18 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 const STORAGE_KEY = "notes-app-user-id";
 
-export function useAuth() {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showAuthModal, setShowAuthModal] = useState(false);
+function getStoredUserId(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(STORAGE_KEY);
+}
 
-  useEffect(() => {
-    // Check localStorage for existing UUID
-    const storedId = localStorage.getItem(STORAGE_KEY);
-    if (storedId) {
-      setUserId(storedId);
-      setShowAuthModal(false);
-    } else {
-      setShowAuthModal(true);
-    }
-    setIsLoading(false);
-  }, []);
+export function useAuth() {
+  const storedId = getStoredUserId();
+  const [userId, setUserId] = useState<string | null>(storedId);
+  const [isLoading] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(!storedId);
 
   const generateNewId = useCallback(() => {
     const newId = uuidv4();
