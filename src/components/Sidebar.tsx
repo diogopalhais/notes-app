@@ -100,21 +100,8 @@ export function Sidebar({
         borderRight: "1px solid var(--color-border)"
       }}
     >
-      {/* Logo */}
-      <div className="p-4 flex items-center gap-2">
-        <div 
-          className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: "var(--color-accent-muted)" }}
-        >
-          <svg className="w-4 h-4" style={{ color: "var(--color-accent)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-        </div>
-        <span className="font-semibold" style={{ color: "var(--color-text-primary)" }}>Notes</span>
-      </div>
-
       {/* Navigation */}
-      <div className="flex-1 overflow-auto px-3 space-y-6">
+      <div className="p-6 flex-1 overflow-auto px-3 space-y-6">
         {/* Main nav */}
         <div className="space-y-1">
           <NavItem
