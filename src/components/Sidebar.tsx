@@ -62,6 +62,7 @@ interface SidebarProps {
   weekCount: number;
   allCount: number;
   theme: "dark" | "light";
+  userEmail: string | null;
   onViewChange: (view: View) => void;
   onSelectFolder: (folderId: string | null) => void;
   onSelectTag: (tagId: string | null) => void;
@@ -69,7 +70,6 @@ interface SidebarProps {
   onDeleteFolder: (folderId: string) => void;
   onToggleTheme: () => void;
   onLogout: () => void;
-  onCopyUserId: () => void;
 }
 
 export function Sidebar({
@@ -83,6 +83,7 @@ export function Sidebar({
   weekCount,
   allCount,
   theme,
+  userEmail,
   onViewChange,
   onSelectFolder,
   onSelectTag,
@@ -90,7 +91,6 @@ export function Sidebar({
   onDeleteFolder,
   onToggleTheme,
   onLogout,
-  onCopyUserId,
 }: SidebarProps) {
   return (
     <div 
@@ -229,6 +229,18 @@ export function Sidebar({
         className="p-3 space-y-1"
         style={{ borderTop: "1px solid var(--color-border)" }}
       >
+        {/* User info */}
+        {userEmail && (
+          <div 
+            className="flex items-center gap-2 px-3 py-2 mb-2"
+            style={{ color: "var(--color-text-secondary)" }}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span className="text-sm truncate" title={userEmail}>{userEmail}</span>
+          </div>
+        )}
         <button
           onClick={onToggleTheme}
           className="w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-left"
@@ -248,18 +260,6 @@ export function Sidebar({
           <span className="text-sm">{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
         </button>
         <button
-          onClick={onCopyUserId}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-left"
-          style={{ color: "var(--color-text-secondary)" }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--color-bg-hover)"}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-          <span className="text-sm">Copy Secret Key</span>
-        </button>
-        <button
           onClick={onLogout}
           className="w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-left"
           style={{ color: "var(--color-text-secondary)" }}
@@ -275,7 +275,7 @@ export function Sidebar({
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          <span className="text-sm">Logout</span>
+          <span className="text-sm">Sign Out</span>
         </button>
       </div>
     </div>

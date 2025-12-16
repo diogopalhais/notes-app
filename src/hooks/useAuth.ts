@@ -1,58 +1,44 @@
-import { useState, useCallback } from "react";
-import { v4 as uuidv4 } from "uuid";
-
-const STORAGE_KEY = "notes-app-user-id";
-
-function getStoredUserId(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(STORAGE_KEY);
-}
+import { db } from "../db/instant";
 
 export function useAuth() {
-  const storedId = getStoredUserId();
-  const [userId, setUserId] = useState<string | null>(storedId);
-  const [isLoading] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(!storedId);
+  // Use InstantDB's built-in auth - secure, server-validated tokens
+  const { isLoading, user, error } = db.useAuth();
 
-  const generateNewId = useCallback(() => {
-    const newId = uuidv4();
-    localStorage.setItem(STORAGE_KEY, newId);
-    setUserId(newId);
-    setShowAuthModal(false);
-    return newId;
-  }, []);
+  const userId = user?.id || null;
+  const userEmail = user?.email || null;
+  const showAuthModal = !isLoading && !user;
 
-  const setExistingId = useCallback((id: string) => {
-    // Validate UUID format
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(id)) {
-      throw new Error("Invalid UUID format");
-    }
-    localStorage.setItem(STORAGE_KEY, id);
-    setUserId(id);
-    setShowAuthModal(false);
-  }, []);
+  // Send magic link email for passwordless auth
+  const sendMagicLink = async (email: string) => {
+    await db.auth.sendMagicCode({ email });
+  };
 
-  const logout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
-    setUserId(null);
-    setShowAuthModal(true);
-  }, []);
+  // Verify the magic code from email
+  const verifyMagicCode = async (email: string, code: string) => {
+    await db.auth.signInWithMagicCode({ email, code });
+  };
 
-  const copyUserId = useCallback(async () => {
+  // Sign out
+  const logout = () => {
+    db.auth.signOut();
+  };
+
+  // Copy user ID to clipboard (for backup/sharing)
+  const copyUserId = async () => {
     if (userId) {
       await navigator.clipboard.writeText(userId);
     }
-  }, [userId]);
+  };
 
   return {
     userId,
+    userEmail,
     isLoading,
+    error,
     showAuthModal,
-    generateNewId,
-    setExistingId,
+    sendMagicLink,
+    verifyMagicCode,
     logout,
     copyUserId,
   };
 }
-

@@ -13,7 +13,8 @@ A minimal, aesthetic markdown notes app with real-time sync across devices.
 - **Dark/Light Theme** - Toggle between themes
 - **Offline Support** - Works without internet, syncs when back online
 - **Multi-device Sync** - Real-time sync via InstantDB
-- **UUID Auth** - Simple secret key for multi-device access
+- **Secure Email Auth** - Magic link authentication (passwordless)
+- **Server-side Security** - Permission rules prevent unauthorized access
 
 ## Setup
 
@@ -23,7 +24,53 @@ A minimal, aesthetic markdown notes app with real-time sync across devices.
 2. Create a new app
 3. Copy your App ID
 
-### 2. Configure Environment
+### 2. Configure Permissions (IMPORTANT for Security)
+
+In your InstantDB dashboard, go to **Permissions** and add these rules:
+
+```json
+{
+  "$users": {
+    "allow": {
+      "view": "false",
+      "create": "false",
+      "update": "false",
+      "delete": "false"
+    }
+  },
+  "notes": {
+    "allow": {
+      "view": "auth.id != null && data.ownerId == auth.id",
+      "create": "auth.id != null && newData.ownerId == auth.id",
+      "update": "auth.id != null && data.ownerId == auth.id && newData.ownerId == auth.id",
+      "delete": "auth.id != null && data.ownerId == auth.id"
+    }
+  },
+  "folders": {
+    "allow": {
+      "view": "auth.id != null && data.ownerId == auth.id",
+      "create": "auth.id != null && newData.ownerId == auth.id",
+      "update": "auth.id != null && data.ownerId == auth.id && newData.ownerId == auth.id",
+      "delete": "auth.id != null && data.ownerId == auth.id"
+    }
+  },
+  "tags": {
+    "allow": {
+      "view": "auth.id != null && data.ownerId == auth.id",
+      "create": "auth.id != null && newData.ownerId == auth.id",
+      "update": "auth.id != null && data.ownerId == auth.id && newData.ownerId == auth.id",
+      "delete": "auth.id != null && data.ownerId == auth.id"
+    }
+  }
+}
+```
+
+These rules ensure:
+- Users cannot access the `$users` table
+- Users can only read/write their own notes, folders, and tags
+- The `ownerId` cannot be changed after creation
+
+### 3. Configure Environment
 
 Create a `.env` file in the root:
 
@@ -31,7 +78,7 @@ Create a `.env` file in the root:
 VITE_INSTANT_APP_ID=your-app-id-here
 ```
 
-### 3. Install & Run
+### 4. Install & Run
 
 ```bash
 npm install
@@ -61,7 +108,7 @@ Open http://localhost:5173
 ```
 src/
 ├── components/
-│   ├── AuthModal.tsx     # UUID auth
+│   ├── AuthModal.tsx     # Email magic link auth
 │   ├── Editor.tsx        # CodeMirror editor
 │   ├── FolderTree.tsx    # Folder navigation
 │   ├── NoteEditor.tsx    # Editor + preview wrapper
@@ -71,7 +118,7 @@ src/
 ├── db/
 │   └── instant.ts        # InstantDB config
 ├── hooks/
-│   ├── useAuth.ts        # UUID auth
+│   ├── useAuth.ts        # InstantDB auth
 │   ├── useFolders.ts     # Folder operations
 │   ├── useNotes.ts       # Note CRUD
 │   ├── useTags.ts        # Tag operations
@@ -79,15 +126,17 @@ src/
 ├── App.tsx
 ├── main.tsx
 └── index.css             # Tailwind + theme vars
+instant.perms.ts          # Permission rules (for reference)
 ```
 
 ## Multi-device Sync
 
-1. Generate a secret key on your first device
-2. Copy the key (sidebar → "Copy Secret Key")
-3. On another device, enter the same key to sync notes
+1. Sign in with your email on any device
+2. Check your email for the magic code
+3. Enter the code to authenticate
+4. Your notes will automatically sync across all devices where you're signed in
 
-**Important:** Keep your secret key safe - it's the only way to access your notes!
+**Security:** Your notes are protected by server-side permission rules. Only you can access your notes - no one else can read them, even with direct database access.
 
 ## Deployment
 

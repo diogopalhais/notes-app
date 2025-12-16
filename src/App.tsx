@@ -14,13 +14,13 @@ type View = "all" | "today" | "week" | "folder" | "tag";
 
 function App() {
   const { 
-    userId, 
+    userId,
+    userEmail,
     isLoading: authLoading, 
-    showAuthModal, 
-    generateNewId, 
-    setExistingId, 
-    logout, 
-    copyUserId 
+    showAuthModal,
+    sendMagicLink,
+    verifyMagicCode,
+    logout,
   } = useAuth();
 
   const { 
@@ -49,7 +49,6 @@ function App() {
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
-  const [copyFeedback, setCopyFeedback] = useState(false);
 
   // Filter notes based on current view
   const filteredNotes = useMemo(() => {
@@ -89,13 +88,6 @@ function App() {
       setSelectedNoteId(null);
     }
   }, [deleteNote, selectedNoteId]);
-
-  // Copy user ID with feedback
-  const handleCopyUserId = useCallback(async () => {
-    await copyUserId();
-    setCopyFeedback(true);
-    setTimeout(() => setCopyFeedback(false), 2000);
-  }, [copyUserId]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -186,8 +178,8 @@ function App() {
   if (showAuthModal) {
     return (
       <AuthModal
-        onGenerate={generateNewId}
-        onSubmit={setExistingId}
+        onSendMagicLink={sendMagicLink}
+        onVerifyCode={verifyMagicCode}
       />
     );
   }
@@ -206,6 +198,7 @@ function App() {
         weekCount={thisWeekNotes.length}
         allCount={notes.length}
         theme={theme}
+        userEmail={userEmail}
         onViewChange={setView}
         onSelectFolder={setSelectedFolderId}
         onSelectTag={setSelectedTagId}
@@ -213,7 +206,6 @@ function App() {
         onDeleteFolder={deleteFolder}
         onToggleTheme={toggleTheme}
         onLogout={logout}
-        onCopyUserId={handleCopyUserId}
       />
 
       {/* Note List */}
@@ -237,32 +229,6 @@ function App() {
         onMoveToFolder={moveToFolder}
       />
 
-      {/* Copy feedback toast */}
-      {copyFeedback && (
-        <div 
-          className="fixed bottom-4 right-4 px-4 py-2 rounded-lg text-sm flex items-center gap-2 animate-fade-in"
-          style={{ 
-            backgroundColor: "var(--color-bg-tertiary)",
-            color: "var(--color-text-primary)",
-            border: "1px solid var(--color-border)"
-          }}
-        >
-          <svg className="w-4 h-4" style={{ color: "var(--color-success)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          Secret key copied!
-        </div>
-      )}
-
-      <style>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.2s ease-out;
-        }
-      `}</style>
     </div>
   );
 }
