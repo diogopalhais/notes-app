@@ -38,7 +38,7 @@ const schema = i.schema({
 });
 
 // Initialize the database (will fail silently without valid APP_ID)
-export const db = init({ appId: APP_ID || "placeholder", schema });
+export const db = init({ appId: APP_ID || "placeholder", schema, devtool: false });
 
 // Export utilities
 export { id, tx };
